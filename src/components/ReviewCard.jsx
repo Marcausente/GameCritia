@@ -12,7 +12,7 @@ const ReviewCard = ({ review }) => {
                 <h3 className="card-title">{review.title}</h3>
                 <p className="card-excerpt">{review.excerpt}</p>
                 <div className="card-footer">
-                    <span className="card-author">by {review.author}</span>
+                    <span className="card-author">por {review.author}</span>
                     <span className="card-date">{review.date}</span>
                 </div>
             </div>
