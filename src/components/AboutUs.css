@@ -1,0 +1,90 @@
+.about-section {
+    padding: 6rem 2rem;
+    background: linear-gradient(180deg, var(--bg-dark) 0%, #130f1c 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.about-background-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(82, 67, 106, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.about-container {
+    max-width: 900px;
+    /* Reduced width for better readability on single column */
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.about-header .section-title {
+    border-left: none;
+    display: inline-block;
+    font-size: 2.5rem;
+    background: linear-gradient(to right, #fff, var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.title-underline {
+    height: 4px;
+    width: 60px;
+    background: var(--primary);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.about-single-card {
+    background: rgba(30, 25, 40, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-single-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.about-single-card p {
+    margin-bottom: 1.5rem;
+    font-size: 1.15rem;
+    color: #e0e0e0;
+    line-height: 1.8;
+    text-align: justify;
+    /* Optional: makes it look like a book/article */
+}
+
+.about-single-card p:last-child {
+    margin-bottom: 0;
+}
+
+.about-single-card strong {
+    color: var(--primary-light);
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .about-single-card {
+        padding: 2rem;
+    }
+}
