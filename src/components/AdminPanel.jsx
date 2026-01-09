@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminPanel.css';
 
+import ReviewEditor from './ReviewEditor';
+
 const AdminPanel = () => {
-    const [activeTab, setActiveTab] = useState('users'); // users, content
+    const [activeTab, setActiveTab] = useState('users'); // users, content, reviews
     const [users, setUsers] = useState([]);
     const [content, setContent] = useState({});
+    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [editingReview, setEditingReview] = useState(null); // null = list mode, {} = create new, object = edit
     
     // User Management State
     const [newUserEmail, setNewUserEmail] = useState('');
@@ -24,13 +28,16 @@ const AdminPanel = () => {
         setLoading(true);
         if (activeTab === 'users') {
             await fetchUsers();
-        } else {
+        } else if (activeTab === 'content') {
             await fetchContent();
+        } else if (activeTab === 'reviews') {
+            await fetchReviews();
         }
         setLoading(false);
     };
 
     const fetchUsers = async () => {
+        // ... (unchanged)
         try {
             const { data, error } = await supabase.rpc('get_all_users_admin');
             if (error) throw error;
@@ -41,6 +48,7 @@ const AdminPanel = () => {
     };
 
     const fetchContent = async () => {
+        // ... (unchanged)
         try {
             // Fetch About Us
             const { data: aboutData, error: aboutError } = await supabase.from('about_us_content').select('*').single();
@@ -68,7 +76,22 @@ const AdminPanel = () => {
         }
     };
 
+    const fetchReviews = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('reviews')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            setReviews(data || []);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+    };
+
     // --- User Actions ---
+    // ... (unchanged)
 
     const handleUpdateRole = async (userId, newRole) => {
         try {
@@ -119,6 +142,7 @@ const AdminPanel = () => {
     };
 
     // --- Content Actions ---
+    // ... (unchanged)
 
     const handleContentChange = (section, key, value) => {
         setContent(prev => ({ ...prev, [`${section}_${key}`]: value }));
@@ -158,6 +182,25 @@ const AdminPanel = () => {
         }
     };
 
+    // --- Review Actions ---
+
+    const handleDeleteReview = async (id) => {
+        if (!window.confirm('¿Eliminar reseña permanentemente?')) return;
+        try {
+            const { error } = await supabase.from('reviews').delete().eq('id', id);
+            if (error) throw error;
+            fetchReviews();
+        } catch (error) {
+            console.error(error);
+            alert('Error deleting review');
+        }
+    };
+
+    const handleSaveReviewSuccess = () => {
+        setEditingReview(null); // Exit editor
+        fetchReviews(); // Refresh list
+    };
+
     return (
         <div className="admin-panel">
             <div className="admin-header">
@@ -175,11 +218,17 @@ const AdminPanel = () => {
                     >
                         Contenido
                     </button>
+                    <button 
+                        className={`admin-tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('reviews')}
+                    >
+                        Reseñas
+                    </button>
                 </div>
             </div>
 
             <div className="admin-content-card">
-                {activeTab === 'users' ? (
+                {activeTab === 'users' && (
                     <div className="users-section">
                         {/* Users Table */}
                         <div className="create-user-form" style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -249,7 +298,9 @@ const AdminPanel = () => {
                             </table>
                         </div>
                     </div>
-                ) : (
+                )}
+
+                {activeTab === 'content' && (
                     <div className="content-section">
                         <div className="edit-form-container">
                             <h3>Sobre Nosotros</h3>
@@ -304,6 +355,70 @@ const AdminPanel = () => {
                                 {saveLoading ? 'Guardando...' : 'Guardar Cambios'}
                             </button>
                         </div>
+                    </div>
+                )}
+
+                {activeTab === 'reviews' && (
+                    <div className="reviews-section">
+                        {!editingReview ? (
+                            <div className="reviews-list-container">
+                                <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <h3>Reseñas Publicadas</h3>
+                                    <button className="create-btn" onClick={() => setEditingReview({})} style={{ background: '#20B2AA', color: 'white', padding: '0.5rem 1rem', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
+                                        + Nueva Reseña
+                                    </button>
+                                </div>
+                                <table className="users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Título</th>
+                                            <th>Autor</th>
+                                            <th>Nota</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {reviews.map(r => (
+                                            <tr key={r.id}>
+                                                <td>{r.title}</td>
+                                                <td>{r.author}</td>
+                                                <td>
+                                                    <span style={{ fontWeight: 'bold' }}>{r.rating}</span>
+                                                </td>
+                                                <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                                                <td>
+                                                    <button 
+                                                        className="action-btn" 
+                                                        onClick={() => setEditingReview(r)}
+                                                        style={{ marginRight: '0.5rem', background: '#444' }}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                    <button 
+                                                        className="action-btn btn-delete"
+                                                        onClick={() => handleDeleteReview(r.id)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {reviews.length === 0 && (
+                                            <tr>
+                                                <td colSpan="5" style={{ textAlign: 'center', color: '#aaa' }}>No hay reseñas creadas.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <ReviewEditor 
+                                review={editingReview} 
+                                onSave={handleSaveReviewSuccess} 
+                                onCancel={() => setEditingReview(null)} 
+                            />
+                        )}
                     </div>
                 )}
             </div>
