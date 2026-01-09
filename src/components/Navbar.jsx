@@ -31,6 +31,7 @@ const Navbar = () => {
                     <a href="#reviews" className="nav-link">Reseñas</a>
                     <a href="#ranking" className="nav-link">Ranking</a>
                     <a href="#about" className="nav-link">Sobre Nosotros</a>
+                    <a href="#contact" className="nav-link">Contacto</a>
                 </div>
                 <div className="navbar-auth">
                     <button className="btn-login">Iniciar Sesión</button>

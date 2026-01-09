@@ -73,7 +73,7 @@ const AboutUs = () => {
                     </p>
                 </div>
 
-                <div className="contact-section">
+                <div id="contact" className="contact-section">
                     <div className="about-header">
                         <h2 className="section-title">Contacto</h2>
                         <div className="title-underline"></div>
