@@ -7,9 +7,14 @@ const AdminPanel = () => {
     const [users, setUsers] = useState([]);
     const [content, setContent] = useState({});
     const [loading, setLoading] = useState(true);
+    
+    // User Management State
     const [newUserEmail, setNewUserEmail] = useState('');
     const [newUserPassword, setNewUserPassword] = useState('');
     const [newUserLoading, setNewUserLoading] = useState(false);
+
+    // Saving State
+    const [saveLoading, setSaveLoading] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -26,7 +31,6 @@ const AdminPanel = () => {
     };
 
     const fetchUsers = async () => {
-        // Fetch all profiles. Note: In reality, we use the RPC function to get all users
         try {
             const { data, error } = await supabase.rpc('get_all_users_admin');
             if (error) throw error;
@@ -49,10 +53,7 @@ const AdminPanel = () => {
             // Merge into content state
             const newContent = {};
             if (aboutData) {
-                newContent['about_bio_p1'] = aboutData.bio_p1;
-                newContent['about_bio_p2'] = aboutData.bio_p2;
-                newContent['about_bio_p3'] = aboutData.bio_p3;
-                newContent['about_bio_p4'] = aboutData.bio_p4;
+                newContent['about_bio'] = aboutData.bio;
             }
             if (contactData) {
                 newContent['contact_name'] = contactData.name;
@@ -117,26 +118,25 @@ const AdminPanel = () => {
         }
     };
 
-    // ... Content Actions
+    // --- Content Actions ---
 
     const handleContentChange = (section, key, value) => {
         setContent(prev => ({ ...prev, [`${section}_${key}`]: value }));
     };
 
     const handleSaveContent = async () => {
+        console.log("Saving content...", content);
+        setSaveLoading(true);
         try {
             // Update About Us
             const aboutUpdates = {
-                id: 1, // Assumes single row with ID 1
-                bio_p1: content['about_bio_p1'],
-                bio_p2: content['about_bio_p2'],
-                bio_p3: content['about_bio_p3'],
-                bio_p4: content['about_bio_p4']
+                id: 1, 
+                bio: content['about_bio']
             };
 
             // Update Contact Info
             const contactUpdates = {
-                id: 1, // Assumes single row with ID 1
+                id: 1, 
                 name: content['contact_name'],
                 email: content['contact_email'],
                 twitter_url: content['contact_twitter_url'],
@@ -151,7 +151,10 @@ const AdminPanel = () => {
 
             alert('Contenido guardado correctamente');
         } catch (error) {
+            console.error("Save error:", error);
             alert('Error saving content: ' + error.message);
+        } finally {
+            setSaveLoading(false);
         }
     };
 
@@ -178,8 +181,8 @@ const AdminPanel = () => {
             <div className="admin-content-card">
                 {activeTab === 'users' ? (
                     <div className="users-section">
-                        {/* Create User Form */}
-                         <div className="create-user-form" style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        {/* Users Table */}
+                        <div className="create-user-form" style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                             <h3 style={{ marginBottom: '1rem' }}>Crear Nuevo Usuario</h3>
                             <form onSubmit={handleCreateUser} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                                 <input 
@@ -207,7 +210,6 @@ const AdminPanel = () => {
                             </p>
                         </div>
 
-                        {/* Users Table */}
                         <div className="users-table-container">
                             <table className="users-table">
                                 <thead>
@@ -252,28 +254,24 @@ const AdminPanel = () => {
                         <div className="edit-form-container">
                             <h3>Sobre Nosotros</h3>
                             <div className="form-field">
-                                <label>Párrafo 1 (Intro)</label>
+                                <label>Biografía (Párrafo Único)</label>
                                 <textarea 
-                                    value={content['about_bio_p1'] || ''}
-                                    onChange={(e) => handleContentChange('about', 'bio_p1', e.target.value)}
-                                />
-                            </div>
-                            <div className="form-field">
-                                <label>Párrafo 2</label>
-                                <textarea 
-                                    value={content['about_bio_p2'] || ''}
-                                    onChange={(e) => handleContentChange('about', 'bio_p2', e.target.value)}
-                                />
-                            </div>
-                             <div className="form-field">
-                                <label>Párrafo 3</label>
-                                <textarea 
-                                    value={content['about_bio_p3'] || ''}
-                                    onChange={(e) => handleContentChange('about', 'bio_p3', e.target.value)}
+                                    value={content['about_bio'] || ''}
+                                    onChange={(e) => handleContentChange('about', 'bio', e.target.value)}
+                                    style={{ minHeight: '300px' }}
                                 />
                             </div>
 
                             <h3>Contacto</h3>
+                            <div className="form-field">
+                                <label>Nombre de Contacto</label>
+                                <input 
+                                    type="text"
+                                    value={content['contact_name'] || ''}
+                                    onChange={(e) => handleContentChange('contact', 'name', e.target.value)}
+                                    style={{ width: '100%', padding: '0.5rem', background: '#222', border: '1px solid #444', color: 'white', borderRadius: '4px' }}
+                                />
+                            </div>
                             <div className="form-field">
                                 <label>Email de Contacto</label>
                                 <input 
@@ -283,9 +281,27 @@ const AdminPanel = () => {
                                     style={{ width: '100%', padding: '0.5rem', background: '#222', border: '1px solid #444', color: 'white', borderRadius: '4px' }}
                                 />
                             </div>
+                            <div className="form-field">
+                                <label>URL Twitter</label>
+                                <input 
+                                    type="text"
+                                    value={content['contact_twitter_url'] || ''}
+                                    onChange={(e) => handleContentChange('contact', 'twitter_url', e.target.value)}
+                                    style={{ width: '100%', padding: '0.5rem', background: '#222', border: '1px solid #444', color: 'white', borderRadius: '4px' }}
+                                />
+                            </div>
+                            <div className="form-field">
+                                <label>Usuario Twitter</label>
+                                <input 
+                                    type="text"
+                                    value={content['contact_twitter_handle'] || ''}
+                                    onChange={(e) => handleContentChange('contact', 'twitter_handle', e.target.value)}
+                                    style={{ width: '100%', padding: '0.5rem', background: '#222', border: '1px solid #444', color: 'white', borderRadius: '4px' }}
+                                />
+                            </div>
 
-                            <button className="save-btn" onClick={handleSaveContent}>
-                                Guardar Cambios
+                            <button className="save-btn" onClick={handleSaveContent} disabled={saveLoading}>
+                                {saveLoading ? 'Guardando...' : 'Guardar Cambios'}
                             </button>
                         </div>
                     </div>

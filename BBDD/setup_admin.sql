@@ -1,23 +1,33 @@
--- Clean up old table if exists
+-- FIX: Ensure profiles table uses 'role' column (not 'rol')
+do $$
+begin
+  if exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'profiles' and column_name = 'rol') then
+    alter table public.profiles rename column rol to role;
+  end if;
+end $$;
+
+-- Clean up old tables if they exist to force schema update
 drop table if exists public.site_content;
+drop table if exists public.about_us_content;
+drop table if exists public.contact_info;
 
 -- TABLE: about_us_content
-create table if not exists public.about_us_content (
+create table public.about_us_content (
   id serial primary key,
-  bio_p1 text,
-  bio_p2 text,
-  bio_p3 text,
-  bio_p4 text,
+  bio text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 -- Check if table is empty (for idempotent insert)
-insert into public.about_us_content (id, bio_p1, bio_p2, bio_p3, bio_p4)
+insert into public.about_us_content (id, bio)
 select 1,
-  'Soy Marcausente, tengo 21 años y soy un apasionado de los videojuegos...',
-  'Desde hace un tiempo rondaba por mi cabeza la idea de crear un portal...',
-  'El objetivo de GameCritia es mirar los videojuegos desde otra perspectiva...',
-  'Este proyecto nace del amor por el medio...'
+  'Soy Marcausente, tengo 21 años y soy un apasionado de los videojuegos desde que tengo memoria. A lo largo de los años he jugado a títulos de todo tipo y género, disfrutándolos como pocas cosas en el mundo, siempre con la curiosidad de entender qué los hace especiales… o por qué, en algunos casos, no terminan de funcionar conmigo.
+
+Desde hace un tiempo rondaba por mi cabeza la idea de crear un portal de críticas de videojuegos. Un espacio donde, tras terminar un juego, pudiera plasmar mi experiencia de forma honesta y personal, analizando no solo sus mecánicas o apartado técnico, sino también las sensaciones y emociones que me ha transmitido durante las horas de juego.
+
+El objetivo de GameCritia es mirar los videojuegos desde otra perspectiva: más analítica, reflexiva y cercana. Darle una segunda vuelta a títulos que he disfrutado enormemente, pero también revisitar aquellos que en su momento no encajaron conmigo, con la intención de descubrir si, bajo un análisis más profundo, esconden joyas en bruto que pasé por alto.
+
+Este proyecto nace del amor por el medio y de las ganas de compartir una visión sincera, crítica y personal de cada experiencia jugable.'
 where not exists (select 1 from public.about_us_content);
 
 -- Enable RLS for about_us_content
@@ -29,7 +39,7 @@ create policy "Admin write about" on public.about_us_content for all using (
 
 
 -- TABLE: contact_info
-create table if not exists public.contact_info (
+create table public.contact_info (
   id serial primary key,
   name text,
   email text,

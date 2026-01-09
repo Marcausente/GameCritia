@@ -41,10 +41,7 @@ const AboutUs = () => {
             const newContent = { ...content };
             
             if (aboutData) {
-                newContent['bio_p1'] = aboutData.bio_p1;
-                newContent['bio_p2'] = aboutData.bio_p2;
-                newContent['bio_p3'] = aboutData.bio_p3;
-                newContent['bio_p4'] = aboutData.bio_p4;
+                newContent['bio'] = aboutData.bio;
             }
 
             if (contactData) {
@@ -110,10 +107,7 @@ const AboutUs = () => {
                 </div>
 
                 <div className="about-single-card">
-                    <p dangerouslySetInnerHTML={{ __html: content.bio_p1 }}></p>
-                    <p dangerouslySetInnerHTML={{ __html: content.bio_p2 }}></p>
-                    <p dangerouslySetInnerHTML={{ __html: content.bio_p3 }}></p>
-                    <p dangerouslySetInnerHTML={{ __html: content.bio_p4 }}></p>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{content.bio}</p>
                 </div>
 
                 <div id="contact" className="contact-section">
