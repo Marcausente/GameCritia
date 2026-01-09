@@ -16,7 +16,7 @@ const ReviewDetail = () => {
                 .select('*')
                 .eq('id', id)
                 .single();
-            
+
             if (data) setReview(data);
             setLoading(false);
         };
@@ -63,7 +63,7 @@ const ReviewDetail = () => {
                                 return <p key={index} className="review-paragraph">{block.value}</p>;
                             case 'image':
                                 return (
-                                    <div key={index} className="review-image-container">
+                                    <div key={index} className="detail-image-container">
                                         <img src={block.value} alt={block.caption || "Imagen de la reseña"} />
                                         {block.caption && <span className="image-caption">{block.caption}</span>}
                                     </div>
@@ -76,7 +76,7 @@ const ReviewDetail = () => {
                     <p>Esta reseña no tiene contenido detallado.</p>
                 )}
             </div>
-            
+
             <div className="review-footer">
                 <Link to="/resenas" className="back-link">← Volver a todas las reseñas</Link>
             </div>
