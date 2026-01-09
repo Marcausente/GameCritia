@@ -167,6 +167,7 @@ const ReviewEditor = ({ review, onSave, onCancel }) => {
                 cover_image: formData.cover_image,
                 author: formData.author,
                 content: formData.content,
+                created_at: formData.created_at, // Allow user to override date
                 ...(formData.id && { id: formData.id }) 
             };
 
@@ -213,6 +214,16 @@ const ReviewEditor = ({ review, onSave, onCancel }) => {
                     <div className="form-field">
                         <label>Autor</label>
                         <input name="author" value={formData.author} onChange={handleInputChange} />
+                    </div>
+
+                    <div className="form-field">
+                        <label>Fecha de Publicación</label>
+                        <input 
+                            type="date" 
+                            name="created_at" 
+                            value={formData.created_at ? formData.created_at.split('T')[0] : new Date().toISOString().split('T')[0]} 
+                            onChange={handleInputChange} 
+                        />
                     </div>
 
                     <div className="form-field">

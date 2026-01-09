@@ -13,16 +13,23 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Check active session
         const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session?.user) {
-                setUser(session.user);
-                await fetchUserRole(session.user.id);
-            } else {
-                setUser(null);
-                setRole(null);
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
+                
+                if (session?.user) {
+                    setUser(session.user);
+                    await fetchUserRole(session.user.id);
+                } else {
+                    setUser(null);
+                    setRole(null);
+                }
+            } catch (error) {
+                console.error("Auth initialization error:", error);
+                setUser(null); // Fallback to guest
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         getSession();
