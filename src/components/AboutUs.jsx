@@ -12,7 +12,8 @@ const AboutUs = () => {
         contact_name: 'Marc Fernández Messa',
         contact_email: 'marcausente@gmail.com',
         contact_twitter_url: 'https://x.com/marcausente',
-        contact_twitter_handle: '@marcausente'
+        contact_twitter_handle: '@marcausente',
+        contact_discord: 'lordmarcausente'
     });
     
     // Form state
@@ -124,11 +125,14 @@ const AboutUs = () => {
                             <p className="contact-name"><strong>{content.contact_name}</strong></p>
                             <div className="contact-links">
                                 <a href={`mailto:${content.contact_email}`} className="contact-link">
-                                    <span className="icon">✉️</span> {content.contact_email}
+                                    <span className="icon">✉️</span> <strong>Email:</strong> {content.contact_email}
                                 </a>
                                 <a href={content.contact_twitter_url} target="_blank" rel="noopener noreferrer" className="contact-link">
-                                    <span className="icon">✖️</span> {content.contact_twitter_handle}
+                                    <span className="icon">✖️</span> <strong>Twitter:</strong> {content.contact_twitter_handle}
                                 </a>
+                                <div className="contact-link">
+                                    <span className="icon">🎮</span> <strong>Discord:</strong> {content.contact_discord}
+                                </div>
                             </div>
                         </div>
 
