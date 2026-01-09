@@ -58,38 +58,51 @@ const ReviewEditor = ({ review, onSave, onCancel }) => {
 
     const handleImageUpload = async (file) => {
         if (!file) return null;
+        console.log("Starting upload process...", file.name);
         
-        // Default to original file
         let fileToUpload = file;
+        
+        // TEMPORARY DEBUG: Bypass compression to isolate legacy upload hang
+        /*
         const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
+        try {
+            console.log("Attempting compression...");
+            // const compressedFile = await imageCompression(file, options);
+            // fileToUpload = compressedFile;
+            console.log("Compression skipped for debugging.");
+        } catch (compressionError) {
+            console.warn('Compression warning:', compressionError);
+        }
+        */
+
+        setUploading(true); // Set loading state
 
         try {
-            setUploading(true);
-            try {
-                // Attempt compression
-                const compressedFile = await imageCompression(file, options);
-                fileToUpload = compressedFile;
-            } catch (compressionError) {
-                console.warn('Image compression failed, using original file:', compressionError);
-            }
-
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
             const filePath = `${fileName}`;
 
-            const { error: uploadError } = await supabase.storage
+            console.log("Uploading to Supabase path:", filePath);
+
+            const { data, error: uploadError } = await supabase.storage
                 .from('review-images')
                 .upload(filePath, fileToUpload);
 
+            console.log("Upload finished. Error:", uploadError);
+
             if (uploadError) throw uploadError;
             
-            const { data } = supabase.storage.from('review-images').getPublicUrl(filePath);
-            return data.publicUrl;
+            const { data: publicUrlData } = supabase.storage.from('review-images').getPublicUrl(filePath);
+            console.log("Public URL:", publicUrlData.publicUrl);
+            
+            return publicUrlData.publicUrl;
+
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Error uploading image: ' + (error.message || 'Unknown error'));
+            alert('Error details: ' + (error.message || JSON.stringify(error)));
             return null;
         } finally {
+            console.log("Resetting upload state.");
             setUploading(false);
         }
     };
