@@ -59,24 +59,35 @@ const ReviewEditor = ({ review, onSave, onCancel }) => {
     const handleImageUpload = async (file) => {
         if (!file) return null;
         
+        // Default to original file
+        let fileToUpload = file;
         const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
+
         try {
             setUploading(true);
-            const compressedFile = await imageCompression(file, options);
+            try {
+                // Attempt compression
+                const compressedFile = await imageCompression(file, options);
+                fileToUpload = compressedFile;
+            } catch (compressionError) {
+                console.warn('Image compression failed, using original file:', compressionError);
+            }
+
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
             const filePath = `${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('review-images')
-                .upload(filePath, compressedFile);
+                .upload(filePath, fileToUpload);
 
             if (uploadError) throw uploadError;
+            
             const { data } = supabase.storage.from('review-images').getPublicUrl(filePath);
             return data.publicUrl;
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Error uploading image');
+            alert('Error uploading image: ' + (error.message || 'Unknown error'));
             return null;
         } finally {
             setUploading(false);
