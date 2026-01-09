@@ -28,8 +28,15 @@ const Navbar = () => {
     }, []);
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
-        navigate('/'); // Redirect to home on logout
+        // Optimistic update: Redirect immediately
+        navigate('/');
+        
+        try {
+            // Attempt sign out in background
+            await supabase.auth.signOut();
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
     };
 
     return (

@@ -16,14 +16,22 @@ const LoginModal = ({ isOpen, onClose }) => {
         setError(null);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const loginPromise = supabase.auth.signInWithPassword({
                 email,
                 password,
             });
+            
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Login timeout')), 8000) // 8 seconds timeout
+            );
+
+            const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
 
             if (error) {
                 // Map Supabase errors to user-friendly messages
-                if (error.message.includes("Invalid login credentials")) {
+                if (error.message.includes("Login timeout")) {
+                    setError("El servidor tarda en responder. Inténtalo de nuevo.");
+                } else if (error.message.includes("Invalid login credentials")) {
                     setError("Correo o contraseña incorrectos");
                 } else if (error.message.includes("Email not confirmed")) {
                     setError("Por favor, confirma tu correo electrónico");

@@ -11,10 +11,16 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check active session
+        // Check active session with timeout
         const getSession = async () => {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
+                const sessionPromise = supabase.auth.getSession();
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Auth timeout')), 3000)
+                );
+
+                const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]);
+                
                 if (error) throw error;
                 
                 if (session?.user) {
@@ -25,10 +31,10 @@ export const AuthProvider = ({ children }) => {
                     setRole(null);
                 }
             } catch (error) {
-                console.error("Auth initialization error:", error);
+                console.warn("Auth initialization finished with warning:", error.message);
                 setUser(null); // Fallback to guest
             } finally {
-                setLoading(false);
+                if (loading) setLoading(false);
             }
         };
 
@@ -51,14 +57,21 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUserRole = async (userId) => {
         try {
-            const { data, error } = await supabase
+            // Timeout after 2 seconds to avoid blocking the UI
+            const queryPromise = supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', userId)
                 .single();
             
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Profile fetch timeout')), 2000)
+            );
+
+            const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+            
             if (error) {
-                console.error('Error fetching role:', error);
+                console.warn('Error or timeout fetching role:', error.message);
             } else if (data) {
                 setRole(data.role);
             }

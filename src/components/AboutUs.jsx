@@ -53,7 +53,9 @@ const AboutUs = () => {
 
             setContent(newContent);
         } catch (error) {
-            console.error('Error fetching content:', error);
+            if (error.name !== 'AbortError' && error.message !== 'AbortError: The operation was aborted.') {
+                console.error('Error fetching content:', error);
+            }
         }
     };
 
