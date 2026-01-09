@@ -1,6 +1,6 @@
 /* Admin Panel Global */
 .admin-panel {
-    padding: 2rem;
+    padding: 8rem 2rem 2rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
     color: var(--text-light);
@@ -282,4 +282,36 @@
 .role-badge.usuario {
     background: rgba(52, 152, 219, 0.2);
     color: #3498db;
+}
+
+/* Content Tab Styles */
+.edit-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #aaa;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-field textarea {
+    min-height: 150px;
 }
