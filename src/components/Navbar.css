@@ -41,6 +41,7 @@
     color: var(--text-main);
     background: linear-gradient(45deg, var(--text-main), var(--primary-light));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -89,19 +90,7 @@
     background-color: rgba(82, 67, 106, 0.2);
 }
 
-.btn-signup {
-    background-color: var(--primary);
-    color: white;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-}
 
-.btn-signup:hover {
-    background-color: var(--primary-light);
-    transform: translateY(-2px);
-}
 
 @media (max-width: 768px) {
     .navbar-links {

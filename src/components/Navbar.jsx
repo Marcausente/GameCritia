@@ -35,7 +35,6 @@ const Navbar = () => {
                 </div>
                 <div className="navbar-auth">
                     <button className="btn-login">Iniciar Sesión</button>
-                    <button className="btn-signup">Registrarse</button>
                 </div>
             </div>
         </nav>
