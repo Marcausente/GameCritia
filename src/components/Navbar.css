@@ -97,3 +97,15 @@
         display: none;
     }
 }
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-greeting {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}

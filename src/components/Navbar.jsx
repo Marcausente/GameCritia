@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../supabaseClient';
+import LoginModal from './LoginModal';
 import './Navbar.css';
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const { user, role } = useAuth(); // Get user from context
 
     useEffect(() => {
         const handleScroll = () => {
@@ -20,24 +25,39 @@ const Navbar = () => {
         };
     }, []);
 
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+    };
+
     return (
-        <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-            <div className="navbar-container">
-                <div className="navbar-logo">
-                    <img src="/logocritia.png" alt="GameCritia Logo" className="logo-img" />
-                    <span className="logo-text">GameCritia</span>
+        <>
+            <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+                <div className="navbar-container">
+                    <div className="navbar-logo">
+                        <img src="/logocritia.png" alt="GameCritia Logo" className="logo-img" />
+                        <span className="logo-text">GameCritia</span>
+                    </div>
+                    <div className="navbar-links">
+                        <a href="#reviews" className="nav-link">Reseñas</a>
+                        <a href="#ranking" className="nav-link">Ranking</a>
+                        <a href="#about" className="nav-link">Sobre Nosotros</a>
+                        <a href="#contact" className="nav-link">Contacto</a>
+                    </div>
+                    <div className="navbar-auth">
+                        {user ? (
+                            <div className="user-menu">
+                                <span className="user-greeting">Hola, {role === 'administrador' ? 'Admin' : 'Usuario'}</span>
+                                <button className="btn-login" onClick={handleLogout}>Cerrar Sesión</button>
+                            </div>
+                        ) : (
+                            <button className="btn-login" onClick={() => setIsLoginOpen(true)}>Iniciar Sesión</button>
+                        )}
+                    </div>
                 </div>
-                <div className="navbar-links">
-                    <a href="#reviews" className="nav-link">Reseñas</a>
-                    <a href="#ranking" className="nav-link">Ranking</a>
-                    <a href="#about" className="nav-link">Sobre Nosotros</a>
-                    <a href="#contact" className="nav-link">Contacto</a>
-                </div>
-                <div className="navbar-auth">
-                    <button className="btn-login">Iniciar Sesión</button>
-                </div>
-            </div>
-        </nav>
+            </nav>
+
+            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+        </>
     );
 };
 
