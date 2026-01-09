@@ -4,11 +4,11 @@ import { supabase } from '../supabaseClient';
 import LoginModal from './LoginModal';
 import './Navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ onAdminClick }) => {
     const [scrolled, setScrolled] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const { user, role } = useAuth(); // Get user from context
-
+    
     useEffect(() => {
         const handleScroll = () => {
             const offset = window.scrollY;
@@ -33,19 +33,22 @@ const Navbar = () => {
         <>
             <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
                 <div className="navbar-container">
-                    <div className="navbar-logo">
+                    <div className="navbar-logo" onClick={() => onAdminClick('home')}>
                         <img src="/logocritia.png" alt="GameCritia Logo" className="logo-img" />
                         <span className="logo-text">GameCritia</span>
                     </div>
                     <div className="navbar-links">
-                        <a href="#reviews" className="nav-link">Reseñas</a>
-                        <a href="#ranking" className="nav-link">Ranking</a>
-                        <a href="#about" className="nav-link">Sobre Nosotros</a>
-                        <a href="#contact" className="nav-link">Contacto</a>
+                        <a href="#reviews" className="nav-link" onClick={() => onAdminClick('home')}>Reseñas</a>
+                        <a href="#ranking" className="nav-link" onClick={() => onAdminClick('home')}>Ranking</a>
+                        <a href="#about" className="nav-link" onClick={() => onAdminClick('home')}>Sobre Nosotros</a>
+                        <a href="#contact" className="nav-link" onClick={() => onAdminClick('home')}>Contacto</a>
                     </div>
                     <div className="navbar-auth">
                         {user ? (
                             <div className="user-menu">
+                                {role === 'administrador' && (
+                                    <button className="btn-login" onClick={() => onAdminClick('admin')}>Panel de Admin</button>
+                                )}
                                 <span className="user-greeting">Hola, {role === 'administrador' ? 'Admin' : 'Usuario'}</span>
                                 <button className="btn-login" onClick={handleLogout}>Cerrar Sesión</button>
                             </div>

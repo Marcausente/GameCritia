@@ -1,0 +1,147 @@
+.admin-panel {
+    padding: 6rem 2rem 2rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--text-main);
+    min-height: 80vh;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.admin-header h2 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #fff, var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Tabs */
+.admin-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.admin-tab-btn {
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.admin-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.admin-tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Content Container */
+.admin-content-card {
+    background: rgba(30, 25, 40, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+/* User Table */
+.users-table-container {
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.users-table th {
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
+.role-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+.role-badge.administrador { background: rgba(255, 215, 0, 0.15); color: #ffd700; }
+.role-badge.escritor { background: rgba(64, 224, 208, 0.15); color: #40e0d0; }
+.role-badge.usuario { background: rgba(255, 255, 255, 0.1); color: #e0e0e0; }
+
+/* Actions */
+.action-btn {
+    padding: 0.4rem 0.8rem;
+    margin-right: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit { background: rgba(33, 150, 243, 0.2); color: #64b5f6; }
+.btn-delete { background: rgba(244, 67, 54, 0.2); color: #e57373; }
+
+.btn-edit:hover { background: rgba(33, 150, 243, 0.3); }
+.btn-delete:hover { background: rgba(244, 67, 54, 0.3); }
+
+/* Edit Form */
+.edit-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+}
+
+.form-field textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 1rem;
+    color: var(--text-main);
+    min-height: 100px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.save-btn {
+    padding: 0.8rem 2rem;
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    align-self: flex-start;
+    font-size: 1rem;
+}
+
+.save-btn:hover {
+    background: var(--primary-light);
+}
