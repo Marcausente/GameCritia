@@ -227,19 +227,22 @@ const AdminPanel = () => {
         e.preventDefault();
         setNewUserLoading(true);
         try {
-            const { data, error } = await supabase.auth.signUp({
-                email: newUserEmail,
-                password: newUserPassword,
+            // Use RPC to create user without email confirmation
+            const { data, error } = await supabase.rpc('create_user_admin', {
+                new_email: newUserEmail,
+                new_password: newUserPassword,
+                new_role: 'usuario' // Default role
             });
 
             if (error) throw error;
 
-            alert('Usuario creado con éxito. Actualiza la lista.');
+            alert('Usuario creado con éxito (Verificado automáticamente).');
             setNewUserEmail('');
             setNewUserPassword('');
             fetchUsers();
 
         } catch (error) {
+            console.error('Error creating user:', error);
             alert('Error creating user: ' + error.message);
         } finally {
             setNewUserLoading(false);

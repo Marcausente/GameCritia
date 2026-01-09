@@ -10,7 +10,7 @@ const Navbar = () => {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const { user, role } = useAuth();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         const handleScroll = () => {
             const offset = window.scrollY;
@@ -30,7 +30,7 @@ const Navbar = () => {
     const handleLogout = async () => {
         // Optimistic update: Redirect immediately
         navigate('/');
-        
+
         try {
             // Attempt sign out in background
             await supabase.auth.signOut();
@@ -60,10 +60,10 @@ const Navbar = () => {
                     <div className="navbar-auth">
                         {user ? (
                             <div className="user-menu">
-                                {role === 'administrador' && (
-                                    <Link to="/admin" className="btn-login" style={{textDecoration: 'none'}}>Panel de Admin</Link>
+                                {['administrador', 'escritor'].includes(role) && (
+                                    <Link to="/admin" className="btn-login" style={{ textDecoration: 'none' }}>Panel de Admin</Link>
                                 )}
-                                <span className="user-greeting">Hola, {role === 'administrador' ? 'Admin' : 'Usuario'}</span>
+                                <span className="user-greeting">Hola, {role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Usuario'}</span>
                                 <button className="btn-login" onClick={handleLogout}>Cerrar Sesión</button>
                             </div>
                         ) : (
