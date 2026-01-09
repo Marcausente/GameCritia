@@ -28,6 +28,7 @@
     color: var(--primary-light);
     background: linear-gradient(120deg, var(--primary) 0%, var(--primary-light) 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -65,16 +66,7 @@
     box-shadow: 0 10px 20px rgba(82, 67, 106, 0.4);
 }
 
-.hero-btn.secondary {
-    background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--text-main);
-}
 
-.hero-btn.secondary:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: var(--text-main);
-}
 
 /* Background Animations */
 .hero-background-elements {
