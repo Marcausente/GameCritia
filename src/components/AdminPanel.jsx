@@ -67,7 +67,55 @@ const AdminPanel = () => {
         }
     };
 
-    // ... User Actions (handleUpdateRole, handleDeleteUser, handleCreateUser) unchanged
+    // --- User Actions ---
+
+    const handleUpdateRole = async (userId, newRole) => {
+        try {
+            const { error } = await supabase.rpc('update_user_role', { 
+                target_user_id: userId, 
+                new_role: newRole 
+            });
+            if (error) throw error;
+            fetchUsers(); // Refresh
+        } catch (error) {
+            alert('Error updating role: ' + error.message);
+        }
+    };
+
+    const handleDeleteUser = async (userId) => {
+        if (!window.confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')) return;
+        
+        try {
+            const { error } = await supabase.rpc('delete_user_by_id', { target_user_id: userId });
+            if (error) throw error;
+            fetchUsers(); // Refresh
+        } catch (error) {
+            alert('Error deleting user: ' + error.message);
+        }
+    };
+
+    const handleCreateUser = async (e) => {
+        e.preventDefault();
+        setNewUserLoading(true);
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: newUserEmail,
+                password: newUserPassword,
+            });
+
+            if (error) throw error;
+
+            alert('Usuario creado con éxito. Actualiza la lista.');
+            setNewUserEmail('');
+            setNewUserPassword('');
+            fetchUsers();
+            
+        } catch (error) {
+            alert('Error creating user: ' + error.message);
+        } finally {
+            setNewUserLoading(false);
+        }
+    };
 
     // ... Content Actions
 
