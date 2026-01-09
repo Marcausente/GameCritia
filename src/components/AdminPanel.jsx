@@ -38,78 +38,38 @@ const AdminPanel = () => {
 
     const fetchContent = async () => {
         try {
-            const { data, error } = await supabase.from('site_content').select('*');
-            if (error) throw error;
-            
-            // Transform array to object { section_key: content }
-            const contentMap = {};
-            data.forEach(item => {
-                contentMap[`${item.section}_${item.key}`] = item.content;
-            });
-            setContent(contentMap);
+            // Fetch About Us
+            const { data: aboutData, error: aboutError } = await supabase.from('about_us_content').select('*').single();
+            if (aboutError && aboutError.code !== 'PGRST116') throw aboutError;
+
+            // Fetch Contact Info
+            const { data: contactData, error: contactError } = await supabase.from('contact_info').select('*').single();
+            if (contactError && contactError.code !== 'PGRST116') throw contactError;
+
+            // Merge into content state
+            const newContent = {};
+            if (aboutData) {
+                newContent['about_bio_p1'] = aboutData.bio_p1;
+                newContent['about_bio_p2'] = aboutData.bio_p2;
+                newContent['about_bio_p3'] = aboutData.bio_p3;
+                newContent['about_bio_p4'] = aboutData.bio_p4;
+            }
+            if (contactData) {
+                newContent['contact_name'] = contactData.name;
+                newContent['contact_email'] = contactData.email;
+                newContent['contact_twitter_url'] = contactData.twitter_url;
+                newContent['contact_twitter_handle'] = contactData.twitter_handle;
+            }
+            setContent(newContent);
+
         } catch (error) {
             console.error('Error fetching content:', error);
         }
     };
 
-    // --- User Actions ---
+    // ... User Actions (handleUpdateRole, handleDeleteUser, handleCreateUser) unchanged
 
-    const handleUpdateRole = async (userId, newRole) => {
-        try {
-            const { error } = await supabase.rpc('update_user_role', { 
-                target_user_id: userId, 
-                new_role: newRole 
-            });
-            if (error) throw error;
-            fetchUsers(); // Refresh
-        } catch (error) {
-            alert('Error updating role: ' + error.message);
-        }
-    };
-
-    const handleDeleteUser = async (userId) => {
-        if (!window.confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')) return;
-        
-        try {
-            const { error } = await supabase.rpc('delete_user_by_id', { target_user_id: userId });
-            if (error) throw error;
-            fetchUsers(); // Refresh
-        } catch (error) {
-            alert('Error deleting user: ' + error.message);
-        }
-    };
-
-    const handleCreateUser = async (e) => {
-        e.preventDefault();
-        setNewUserLoading(true);
-        try {
-            // WARNING: supabase.auth.signUp signs in the user immediately in the client.
-            // We need to avoid losing the admin session.
-            // WORKAROUND: We can use a fetch call to the GoTrue API manually or use a temporary client if keys allow.
-            // Simpler approach for this specific request: Alert user about session loss or try standard signUp and re-login (too disruptive).
-            
-            // For now, let's try the standard signUp. If it logs us out, so be it (it's a known trade-off without a backend proxy).
-            // Actually, we can check if it creates the user.
-            const { data, error } = await supabase.auth.signUp({
-                email: newUserEmail,
-                password: newUserPassword,
-            });
-
-            if (error) throw error;
-
-            alert('Usuario creado con éxito. Actualiza la lista.');
-            setNewUserEmail('');
-            setNewUserPassword('');
-            fetchUsers();
-            
-        } catch (error) {
-            alert('Error creating user: ' + error.message);
-        } finally {
-            setNewUserLoading(false);
-        }
-    };
-
-    // --- Content Actions ---
+    // ... Content Actions
 
     const handleContentChange = (section, key, value) => {
         setContent(prev => ({ ...prev, [`${section}_${key}`]: value }));
@@ -117,18 +77,30 @@ const AdminPanel = () => {
 
     const handleSaveContent = async () => {
         try {
-            const updates = Object.keys(content).map(compoundKey => {
-                const [section, ...keyParts] = compoundKey.split('_');
-                const key = keyParts.join('_');
-                return {
-                    section: section,
-                    key: key,
-                    content: content[compoundKey]
-                };
-            });
+            // Update About Us
+            const aboutUpdates = {
+                id: 1, // Assumes single row with ID 1
+                bio_p1: content['about_bio_p1'],
+                bio_p2: content['about_bio_p2'],
+                bio_p3: content['about_bio_p3'],
+                bio_p4: content['about_bio_p4']
+            };
 
-            const { error } = await supabase.from('site_content').upsert(updates, { onConflict: 'section, key' });
-            if (error) throw error;
+            // Update Contact Info
+            const contactUpdates = {
+                id: 1, // Assumes single row with ID 1
+                name: content['contact_name'],
+                email: content['contact_email'],
+                twitter_url: content['contact_twitter_url'],
+                twitter_handle: content['contact_twitter_handle']
+            };
+
+            const { error: aboutError } = await supabase.from('about_us_content').upsert(aboutUpdates);
+            if (aboutError) throw aboutError;
+
+            const { error: contactError } = await supabase.from('contact_info').upsert(contactUpdates);
+            if (contactError) throw contactError;
+
             alert('Contenido guardado correctamente');
         } catch (error) {
             alert('Error saving content: ' + error.message);

@@ -29,23 +29,34 @@ const AboutUs = () => {
 
     const fetchContent = async () => {
         try {
-            const { data, error } = await supabase.from('site_content').select('*');
-            if (error) console.error('Error fetching content:', error);
+            // Fetch About Us
+            const { data: aboutData, error: aboutError } = await supabase.from('about_us_content').select('*').single();
+            if (aboutError && aboutError.code !== 'PGRST116') throw aboutError;
+
+            // Fetch Contact Info
+            const { data: contactData, error: contactError } = await supabase.from('contact_info').select('*').single();
+            if (contactError && contactError.code !== 'PGRST116') throw contactError;
             
-            if (data && data.length > 0) {
-                const newContent = { ...content };
-                data.forEach(item => {
-                    // Map database section_key to state keys
-                    if (item.section === 'about') {
-                        newContent[item.key] = item.content;
-                    } else if (item.section === 'contact') {
-                        newContent[`contact_${item.key}`] = item.content;
-                    }
-                });
-                setContent(newContent);
+            // Merge into content state
+            const newContent = { ...content };
+            
+            if (aboutData) {
+                newContent['bio_p1'] = aboutData.bio_p1;
+                newContent['bio_p2'] = aboutData.bio_p2;
+                newContent['bio_p3'] = aboutData.bio_p3;
+                newContent['bio_p4'] = aboutData.bio_p4;
             }
+
+            if (contactData) {
+                newContent['contact_name'] = contactData.name;
+                newContent['contact_email'] = contactData.email;
+                newContent['contact_twitter_url'] = contactData.twitter_url;
+                newContent['contact_twitter_handle'] = contactData.twitter_handle;
+            }
+
+            setContent(newContent);
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error fetching content:', error);
         }
     };
 
