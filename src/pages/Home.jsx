@@ -1,5 +1,6 @@
 import Hero from '../components/Hero';
 import ReviewGrid from '../components/ReviewGrid';
+import Ranking from '../components/Ranking';
 import AboutUs from '../components/AboutUs';
 import { mockReviews } from '../data/mockReviews';
 import { useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ const Home = () => {
         .select('*')
         .order('created_at', { ascending: false })
         .limit(6);
-      
+
       if (data) {
         setReviews(data);
       } else {
@@ -33,30 +34,31 @@ const Home = () => {
     <>
       <Hero />
       <section id="reviews" style={{ padding: '2rem 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ 
-            fontSize: '2rem', 
-            marginBottom: '2rem', 
-            color: 'white',
-            textAlign: 'center' 
-          }}>Últimas Reseñas</h2>
-          
-          <ReviewGrid reviews={reviews} />
+        <h2 style={{
+          fontSize: '2rem',
+          marginBottom: '2rem',
+          color: 'white',
+          textAlign: 'center'
+        }}>Últimas Reseñas</h2>
 
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-              <Link to="/resenas" className="btn-primary" style={{ 
-                  display: 'inline-block',
-                  padding: '0.8rem 2rem', 
-                  background: 'var(--primary)', 
-                  color: 'white', 
-                  borderRadius: '50px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                  transition: 'transform 0.2s'
-              }}>
-                  Ver todas las reseñas
-              </Link>
-          </div>
+        <ReviewGrid reviews={reviews} />
+
+        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+          <Link to="/resenas" className="btn-primary" style={{
+            display: 'inline-block',
+            padding: '0.8rem 2rem',
+            background: 'var(--primary)',
+            color: 'white',
+            borderRadius: '50px',
+            textDecoration: 'none',
+            fontWeight: 'bold',
+            transition: 'transform 0.2s'
+          }}>
+            Ver todas las reseñas
+          </Link>
+        </div>
       </section>
+      <Ranking />
       <AboutUs />
     </>
   );
